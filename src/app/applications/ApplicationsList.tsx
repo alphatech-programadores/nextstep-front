@@ -76,7 +76,7 @@ export default function ApplicationsList({ searchParams }: ApplicationsListProps
     };
 
     return (
-        <ProtectedRoute allowedRoles={['student']}>
+        <ProtectedRoute allowedRoles={['student']} searchParams={searchParams}>
             {loadingUser ? (
                 <div className={styles.loadingContainer}>Verificando usuario...</div>
             ) : (
