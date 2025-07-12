@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-// Eliminamos useSearchParams, ya no es necesario aquí.
+// ¡PUNTO CLAVE! Nos aseguramos de que 'useSearchParams' NO se importe ni se use aquí.
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
@@ -14,22 +14,26 @@ import styles from './ApplicationsPage.module.scss';
 import axiosInstance from '@/services/axiosConfig';
 import { Application } from '@/types';
 
-// Definimos las props que el componente espera recibir.
+// Definimos la forma de las props que el componente va a recibir
 interface ApplicationsListProps {
     searchParams: {
         status?: string;
     };
 }
 
-// Recibimos 'searchParams' como prop.
+// Recibimos 'searchParams' a través de las props
 export default function ApplicationsList({ searchParams }: ApplicationsListProps) {
     const { user, loadingUser } = useAuth();
     const router = useRouter();
 
+    // ¡PUNTO CLAVE!
+    // El estado se inicializa usando la prop 'searchParams.status',
+    // NO con el hook useSearchParams().
+    const [statusFilter, setStatusFilter] = useState(searchParams.status || '');
+
+    // ... (El resto de tus estados y lógica permanecen igual)
     const [applications, setApplications] = useState<Application[]>([]);
     const [loadingApplications, setLoadingApplications] = useState(true);
-    // Inicializamos el estado del filtro directamente desde la prop 'searchParams'.
-    const [statusFilter, setStatusFilter] = useState(searchParams.status || '');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
 
@@ -37,7 +41,6 @@ export default function ApplicationsList({ searchParams }: ApplicationsListProps
         if (!user) return;
         setLoadingApplications(true);
         try {
-            // Usamos 'statusFilter' que ya está en el estado.
             const params = { status: statusFilter, page, per_page: 10 };
             const response = await axiosInstance.get('/apply/me', { params });
             setApplications(response.data.applications);
@@ -48,18 +51,16 @@ export default function ApplicationsList({ searchParams }: ApplicationsListProps
         } finally {
             setLoadingApplications(false);
         }
-    }, [user, statusFilter]); // 'statusFilter' es ahora una dependencia directa del estado.
+    }, [user, statusFilter]);
 
     useEffect(() => {
         if (!loadingUser && user) {
-            // El valor inicial de statusFilter ya viene de las props,
-            // así que la primera carga usará el filtro correcto.
             fetchApplications(1);
         }
     }, [user, loadingUser, fetchApplications]);
 
+    // El resto de tu componente no necesita cambios...
     const handleFilterChange = () => {
-        // La navegación sigue funcionando igual.
         router.push(`/applications?status=${statusFilter}`);
     };
 
@@ -74,7 +75,6 @@ export default function ApplicationsList({ searchParams }: ApplicationsListProps
         }
     };
 
-    // El resto del componente permanece igual...
     return (
         <ProtectedRoute allowedRoles={['student']}>
             {loadingUser ? (
@@ -100,6 +100,7 @@ export default function ApplicationsList({ searchParams }: ApplicationsListProps
                         <button onClick={handleFilterChange} className={styles.applyFilterButton}>Aplicar Filtro</button>
                     </div>
 
+                    {/* ... El resto de tu JSX ... */}
                     {loadingApplications ? (
                         <div className={styles.loadingContainer}>Cargando postulaciones...</div>
                     ) : applications.length === 0 ? (
