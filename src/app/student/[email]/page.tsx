@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import axiosInstance from "@/services/axiosConfig";
 import styles from "@/app/student/profile/profile.module.scss";
+import { toast } from "react-hot-toast";
+import axios from "axios";
 
 interface StudentProfile {
     email: string;
@@ -38,11 +40,13 @@ export default function StudentProfileView() {
             console.log("Solicitando perfil de:", safeEmail);
             const res = await axiosInstance.get(`/students/${safeEmail}/`);
             setProfile(res.data);
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.error(e);
-            setError(
-                e.response?.data?.error || e.message || "Error al cargar perfil."
-            );
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(e)) {
+                message = e.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setLoading(false);
         }

@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'; // Para posible redirección
 // Importa el módulo de estilos específico para esta página
 import styles from './forgot-password.module.scss'; // Asegúrate de que esta ruta sea correcta
 import axiosInstance from '@/services/axiosConfig';
+import axios from 'axios';
 
 export default function ForgotPasswordPage() {
     const router = useRouter(); // Lo añadimos por si queremos añadir una redirección
@@ -28,15 +29,15 @@ export default function ForgotPasswordPage() {
             toast.success(response.data.message || 'Instrucciones enviadas si el correo está registrado. ✅');
             // Opcional: Redirigir al usuario a una página de "Revisa tu email"
             // router.push("/auth/check-email");
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error al solicitar restablecimiento de contraseña:", error);
             // El backend también envía un mensaje de éxito genérico incluso si el correo no existe por seguridad.
             // Pero si hay un error real de la API (ej. servidor caído, error 500), lo capturamos.
-            const errorMessage = error.response?.data?.error
-                ? error.response.data.error
-                : "Ocurrió un error al procesar tu solicitud. Por favor, inténtalo de nuevo más tarde.";
-
-            toast.error(errorMessage);
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setLoading(false); // Desactivar estado de carga
         }

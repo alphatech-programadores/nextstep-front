@@ -9,6 +9,8 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import FormInput from '@/components/Input';
 import styles from './profile.module.scss';
 import Modal from '@/components/Modal';
+import axios from 'axios';
+import { error } from 'console';
 
 // Definir la interfaz para el perfil del estudiante basada en el modelo de backend
 interface StudentProfile {
@@ -82,9 +84,13 @@ export default function StudentProfilePage() {
                 setProfilePicPreview(data.profile_picture_url);
             }
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Error fetching profile:", err);
-            toast.error(err.response?.data?.error || "Error al cargar el perfil.");
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(err)) {
+                message = err.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setLoadingProfile(false);
         }
@@ -156,9 +162,14 @@ export default function StudentProfilePage() {
             await revalidateUser(); // Notificar al AuthContext que recargue la información del usuario
             // ----------------------------------------------------
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Error updating profile:", err);
-            toast.error(err.response?.data?.error || "Error al actualizar el perfil. ❌");
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(err)) {
+                // Accedemos a la propiedad 'error' dentro de 'e.response.data'
+                message = err.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setIsSubmitting(false);
         }
@@ -170,9 +181,14 @@ export default function StudentProfilePage() {
             await axiosInstance.delete('/profile/me');
             toast.success("Tu cuenta ha sido eliminada exitosamente. ¡Adiós! 👋");
             logout();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Error deleting account:", err);
-            toast.error(err.response?.data?.error || "Error al eliminar la cuenta. Por favor, inténtalo de nuevo.");
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(err)) {
+                // Accedemos a la propiedad 'error' dentro de 'e.response.data'
+                message = err.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setIsDeleting(false);
             setShowDeleteModal(false);

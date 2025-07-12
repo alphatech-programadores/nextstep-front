@@ -64,7 +64,7 @@ export default function ApplicationsPage() {
                 // Si es un error genérico, puedes usar su mensaje
                 errorMessage = err.message;
             }
-            toast.error("Error al cargar postulaciones.");
+            toast.error(errorMessage);
         } finally {
             setLoadingApplications(false);
         }
@@ -96,14 +96,12 @@ export default function ApplicationsPage() {
         } catch (err: unknown) {
             console.error("Error cancelling application:", err);
             let errorMessage = "Error al cancelar la postulación.";
-            // 👇 Paso 2: Verificar si el error es una instancia de AxiosError
+
             if (axios.isAxiosError(err)) {
-                // Ahora TypeScript sabe que 'err' es un AxiosError y puedes acceder a 'response' de forma segura
                 if (err.response && err.response.data && err.response.data.error) {
                     errorMessage = err.response.data.error;
                 }
             } else if (err instanceof Error) {
-                // Si es un error genérico, puedes usar su mensaje
                 errorMessage = err.message;
             }
 

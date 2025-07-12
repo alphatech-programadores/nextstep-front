@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { createVacancy, NewVacancyData } from '../../../../services/institucionApi';
 import styles from './form.module.scss';
+import axios from 'axios';
 
 export default function CreateVacancyPage() {
     const router = useRouter();
@@ -35,8 +36,12 @@ export default function CreateVacancyPage() {
             await createVacancy(formData);
             toast.success('¡Vacante creada exitosamente!');
             router.push('/institution'); // Redirige al dashboard después de crear
-        } catch (error: any) {
-            toast.error(error.response?.data?.error || 'No se pudo crear la vacante.');
+        } catch (error: unknown) {
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setIsSubmitting(false);
         }

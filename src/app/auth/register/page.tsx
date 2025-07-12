@@ -10,6 +10,7 @@ import toast from 'react-hot-toast'; // Para notificaciones
 // ¡Importa tu módulo de estilos!
 import styles from './register.module.scss'; // Asegúrate de que esta ruta sea correcta
 import axiosInstance from '@/services/axiosConfig';
+import axios from 'axios';
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -40,16 +41,16 @@ export default function RegisterPage() {
 
             toast.success("Registro exitoso. ¡Bienvenido a NextStep! 🎉 Ahora puedes iniciar sesión.");
             router.push("/auth/login");
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error de registro:", error);
 
             // --- ¡CAMBIO CLAVE AQUÍ! ---
             // Intenta obtener el mensaje de error del backend
-            const errorMessage = error.response && error.response.data && error.response.data.error
-                ? error.response.data.error // Mensaje específico del backend
-                : "Error al registrarte. Por favor, inténtalo de nuevo."; // Mensaje genérico de fallback
-
-            toast.error(errorMessage); // Muestra el mensaje específico o el genérico
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setLoading(false);
         }

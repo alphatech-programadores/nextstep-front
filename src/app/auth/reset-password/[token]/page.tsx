@@ -10,6 +10,7 @@ import toast from 'react-hot-toast'; // Para notificaciones
 // Importa el módulo de estilos específico para esta página
 import styles from './reset-password.module.scss'; // Asegúrate de que esta ruta sea correcta
 import axiosInstance from '@/services/axiosConfig';
+import axios from 'axios';
 
 export default function ResetPasswordPage() {
     const router = useRouter();
@@ -66,13 +67,13 @@ export default function ResetPasswordPage() {
             toast.success(response.data.message || "Contraseña restablecida correctamente. ✅ Redirigiendo al login...");
             setTimeout(() => router.push("/auth/login"), 3000);
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error al restablecer la contraseña:", error);
-            const errorMessage = error.response?.data?.error
-                ? error.response.data.error
-                : "Error al restablecer la contraseña. El enlace podría ser inválido o haber expirado.";
-
-            toast.error(errorMessage);
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setLoading(false);
         }

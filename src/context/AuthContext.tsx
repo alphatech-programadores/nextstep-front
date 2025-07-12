@@ -5,6 +5,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode, useCa
 import { useRouter } from 'next/navigation';
 import axiosInstance from '@/services/axiosConfig'; // Asegúrate de que esta ruta sea correcta
 import toast from 'react-hot-toast';
+import axios from 'axios';
 
 // Interfaz para el objeto de usuario que se almacena en el contexto
 interface User {
@@ -50,11 +51,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             } else {
                 setUser(null);
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error al cargar el usuario desde el token:", error);
             localStorage.removeItem('access_token'); // Limpiar token inválido
             setUser(null);
-            toast.error(error.response?.data?.error || "Tu sesión ha expirado o es inválida. Por favor, inicia sesión de nuevo.");
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                // Accedemos a la propiedad 'error' dentro de 'e.response.data'
+                message = error.response?.data?.error || message;
+            }
+            toast.error(message);
             // Opcional: router.push('/auth/login'); // Redirigir a login si la sesión es inválida
         } finally {
             setLoadingUser(false);

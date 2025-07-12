@@ -6,6 +6,8 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import axiosInstance from "@/services/axiosConfig";
 import styles from "./vacancies.module.scss";
+import { toast } from "react-hot-toast";
+import axios from "axios";
 
 interface Vacant {
     id: number;
@@ -28,9 +30,13 @@ const InstitutionVacanciesPage: React.FC = () => {
             const response = await axiosInstance.get("/vacants/my"); // Ajusta si tu endpoint es diferente
             setVacancies(response.data);
             setError(null);
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.error(e);
-            setError(e.message || "Error al cargar vacantes.");
+            let message = "Error inesperado"
+            if (axios.isAxiosError(e)) {
+                message = e.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setLoading(false);
         }

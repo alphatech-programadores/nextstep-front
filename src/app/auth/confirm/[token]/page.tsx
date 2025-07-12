@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import styles from './confirm.module.scss'; // Tu módulo SCSS
 import FormInput from '@/components/Input'; // Asegúrate de tener este componente
 import Link from "next/link"
+import axios from 'axios';
 
 export default function ConfirmEmailPage() {
     const router = useRouter();
@@ -49,11 +50,13 @@ export default function ConfirmEmailPage() {
                 setTimeout(() => {
                     router.push('/auth/login?confirmed=true');
                 }, 3000);
-            } catch (error: any) {
+            } catch (error: unknown) {
                 setTokenConfirmationStatus('error');
-                const errorMessage = error.response?.data?.error || "Error al confirmar tu correo.";
-                setManualConfirmationMessage(errorMessage); // Mostrar el error en la UI
-                toast.error(errorMessage);
+                let message = 'Ocurrió un error inesperado';
+                if (axios.isAxiosError(error)) {
+                    message = error.response?.data?.error || message;
+                }
+                toast.error(message);
                 // Si falla la confirmación por token, mostrar el formulario manual
                 setShowManualForm(true);
             } finally {
@@ -83,10 +86,12 @@ export default function ConfirmEmailPage() {
             setTimeout(() => {
                 router.push('/auth/login?confirmed=true');
             }, 3000);
-        } catch (error: any) {
-            const errorMessage = error.response?.data?.error || "Error al confirmar tu correo con el código.";
-            setManualConfirmationMessage(errorMessage);
-            toast.error(errorMessage);
+        } catch (error: unknown) {
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setIsConfirmingManually(false);
         }

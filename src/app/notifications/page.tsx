@@ -9,6 +9,7 @@ import ProtectedRoute from '@/components/ProtectedRoute'; // Asegúrate de tener
 import { useRouter } from 'next/navigation'; // Para navegación programática
 import Link from 'next/link';
 import styles from './notifications.module.scss'; // Nuevo módulo de estilos
+import axios from 'axios';
 
 // Interfaz para la estructura de una notificación (debe coincidir con tu backend)
 interface Notification {
@@ -43,13 +44,13 @@ export default function NotificationsPage() {
             setTotalPages(response.data.total_pages);
             setTotalItems(response.data.total_items);
             setCurrentPage(response.data.current_page);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error fetching notifications:", error);
-            toast.error(error.response?.data?.error || "Error al cargar las notificaciones.");
-            if (error.response?.status === 401) {
-                logout(); // Desloguear si el token es inválido
-                router.push('/auth/login');
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.error || message;
             }
+            toast.error(message);
         } finally {
             setLoading(false);
         }
@@ -64,9 +65,13 @@ export default function NotificationsPage() {
             await axiosInstance.put(`/notifications/${id}/mark_read`);
             toast.success("Notificación marcada como leída.");
             fetchNotifications(currentPage); // Recargar notificaciones
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error marking notification as read:", error);
-            toast.error(error.response?.data?.error || "Error al marcar como leída.");
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.error || message;
+            }
+            toast.error(message);
         }
     };
 
@@ -75,9 +80,13 @@ export default function NotificationsPage() {
             await axiosInstance.put(`/notifications/mark_all_read`);
             toast.success("Todas las notificaciones marcadas como leídas.");
             fetchNotifications(currentPage); // Recargar notificaciones
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error marking all notifications as read:", error);
-            toast.error(error.response?.data?.error || "Error al marcar todas como leídas.");
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.error || message;
+            }
+            toast.error(message);
         }
     };
 
@@ -89,9 +98,13 @@ export default function NotificationsPage() {
             await axiosInstance.delete(`/notifications/${id}`);
             toast.success("Notificación eliminada.");
             fetchNotifications(currentPage); // Recargar notificaciones
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error deleting notification:", error);
-            toast.error(error.response?.data?.error || "Error al eliminar la notificación.");
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.error || message;
+            }
+            toast.error(message);
         }
     };
 

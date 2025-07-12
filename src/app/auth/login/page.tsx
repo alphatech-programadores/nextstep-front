@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 // ¡Importa tu módulo de estilos!
 import styles from './login.module.scss'; // Asegúrate de que esta ruta sea correcta
 import axiosInstance from '@/services/axiosConfig';
+import axios from 'axios';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -38,13 +39,13 @@ export default function LoginPage() {
                 router.push("/dashboard");
             }
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error de login:", error);
-            const errorMessage = error.response && error.response.data && error.response.data.error
-                ? error.response.data.error
-                : "Error al iniciar sesión. Por favor, inténtalo de nuevo.";
-
-            toast.error(errorMessage);
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setLoading(false);
         }

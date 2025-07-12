@@ -9,6 +9,7 @@ import ProtectedRoute from '@/components/ProtectedRoute';
 import { getVacancyById, updateVacancy, NewVacancyData } from '../../../../../services/institucionApi';
 // Reutilizamos los mismos estilos del formulario de creación
 import styles from '../../new/form.module.scss';
+import axios from 'axios';
 
 export default function EditVacancyPage() {
     const router = useRouter();
@@ -52,8 +53,12 @@ export default function EditVacancyPage() {
             await updateVacancy(id, formData);
             toast.success('¡Vacante actualizada exitosamente!');
             router.push('/institution/dashboard');
-        } catch (error: any) {
-            toast.error(error.response?.data?.error || 'No se pudo actualizar la vacante.');
+        } catch (error: unknown) {
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setIsSubmitting(false);
         }

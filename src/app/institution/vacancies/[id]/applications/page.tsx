@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -19,8 +19,9 @@ export default function ViewApplicantsPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchApplicants = async () => {
-        if (!vacancyId) return;
+
+    const fetchApplicants = useCallback(async () => {
+        if (!vacancyId) return; // Si usas vacancyId aquí...
         try {
             const data = await getVacancyApplicants(vacancyId);
             setApplicants(data);
@@ -29,7 +30,7 @@ export default function ViewApplicantsPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [vacancyId]); // 👈 ...debes usar vacancyId aquí también.
 
     useEffect(() => {
         fetchApplicants();

@@ -8,6 +8,7 @@ import styles from './saved-vacancies.module.scss';
 import axiosInstance from '@/services/axiosConfig';
 import { useAuth } from '@/context/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import axios from 'axios';
 
 // Interfaz para una Vacante Guardada (ajusta exactamente a la respuesta JSON proporcionada)
 interface SavedVacancy {
@@ -45,10 +46,14 @@ export default function SavedVacanciesPage() {
         try {
             const response = await axiosInstance.get('/saved-vacancies/');
             setSavedVacancies(response.data.data || []);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Error fetching saved vacancies:", err);
-            setError(err.response?.data?.error || "No se pudieron cargar tus vacantes guardadas.");
-            toast.error(err.response?.data?.error || "Error al cargar vacantes guardadas.");
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(err)) {
+                // Accedemos a la propiedad 'error' dentro de 'e.response.data'
+                message = err.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setLoading(false);
         }
@@ -71,9 +76,13 @@ export default function SavedVacanciesPage() {
             const response = await axiosInstance.post(`/saved-vacancies/toggle/${vacantId}`);
             toast.success(response.data.message || "Vacante eliminada de tus guardados.");
             setSavedVacancies(prev => prev.filter(sv => sv.vacant_id !== vacantId));
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error removing saved vacancy:", error);
-            toast.error(error.response?.data?.error || "Error al eliminar la vacante de guardados.");
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.error || message;
+            }
+            toast.error(message);
         }
     };
 

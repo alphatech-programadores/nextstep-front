@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import styles from './VacancyDetailsPage.module.scss';
 import Link from 'next/link';
 import axiosInstance from '@/services/axiosConfig';
+import axios from 'axios';
 
 interface VacancyDetails {
     id: number;
@@ -64,14 +65,15 @@ export default function VacancyDetailsPage() {
                 setApplicationStatus(null); // Reset if not a student or not logged in
             }
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Error fetching vacancy details:", err);
-            if (err.response && err.response.status === 404) {
-                setError("La vacante no fue encontrada o está inactiva.");
-            } else {
-                setError("No se pudieron cargar los detalles de la vacante. Inténtalo de nuevo.");
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(err)) {
+                // Accedemos a la propiedad 'error' dentro de 'e.response.data'
+                message = err.response?.data?.error || message;
             }
-            toast.error("Error al cargar detalles de vacante.");
+            toast.error(message);
+
         } finally {
             setLoading(false);
         }
@@ -111,10 +113,14 @@ export default function VacancyDetailsPage() {
             toast.success(response.data.message || "Postulación enviada exitosamente!");
             // After successful application (or re-application), re-fetch status
             await fetchVacancyAndApplicationStatus(); // Refresh the status
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Error applying to vacancy:", err);
-            const errorMessage = err.response?.data?.error || err.response?.data?.message || "Ocurrió un error al enviar tu postulación.";
-            toast.error(errorMessage);
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(err)) {
+                // Accedemos a la propiedad 'error' dentro de 'e.response.data'
+                message = err.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setIsApplying(false);
         }

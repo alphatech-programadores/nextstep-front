@@ -9,6 +9,7 @@ import FormInput from '@/components/Input';
 import axiosInstance from '@/services/axiosConfig';
 import { useAuth } from '@/context/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import axios from 'axios';
 
 // Interfaz unificada de vacante (ajustada para incluir is_applied)
 interface Vacancy {
@@ -99,10 +100,14 @@ export default function VacanciesPage() {
             setTotalPages(response.data.total_pages || 1);
             setCurrentPage(response.data.current_page || page);
 
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Error fetching vacancies:", err);
-            setError(err.response?.data?.error || "No se pudieron cargar las vacantes. Inténtalo de nuevo más tarde.");
-            toast.error(err.response?.data?.error || "Error al cargar vacantes.");
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(err)) {
+                // Accedemos a la propiedad 'error' dentro de 'e.response.data'
+                message = err.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setLoadingVacancies(false);
         }
@@ -170,9 +175,13 @@ export default function VacanciesPage() {
                     vac.id === vacancyId ? { ...vac, is_saved: response.data.action === 'added' } : vac
                 )
             );
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Error toggling save status:", error);
-            toast.error(error.response?.data?.error || "Error al guardar/eliminar vacante.");
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(error)) {
+                message = error.response?.data?.error || message;
+            }
+            toast.error(message);
         }
     };
 

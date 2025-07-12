@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import toast from "react-hot-toast";
 import "leaflet/dist/leaflet.css";
+import axios from "axios";
 
 
 // Tipo base de vacante
@@ -112,9 +113,13 @@ const VacanciesMap: React.FC = () => {
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const data: Vacant[] = await res.json();
             setVacants(data);
-        } catch (e: any) {
+        } catch (e: unknown) {
             console.error("Error al cargar vacantes:", e);
-            setError(e.message);
+            let message = 'Ocurrió un error inesperado';
+            if (axios.isAxiosError(e)) {
+                message = e.response?.data?.error || message;
+            }
+            toast.error(message);
         } finally {
             setLoading(false);
         }
