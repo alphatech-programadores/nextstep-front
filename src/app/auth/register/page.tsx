@@ -18,7 +18,7 @@ export default function RegisterPage() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [loading, setLoading] = useState(false); // Estado para manejar el loading del botón
-    const [role, setRole] = useState("student")
+    const [role] = useState("student")
 
     const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

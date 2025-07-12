@@ -33,7 +33,7 @@ export default function ViewApplicantsPage() {
 
     useEffect(() => {
         fetchApplicants();
-    }, [vacancyId]);
+    }, [fetchApplicants]);
 
     const handleDecision = async (applicationId: number, decision: 'aceptado' | 'rechazado') => {
         const originalApplicants = [...applicants];
