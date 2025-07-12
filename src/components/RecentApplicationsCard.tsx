@@ -4,27 +4,19 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getMyApplications } from '@/services/studentApi'; // Importamos nuestra función de API
 import styles from './Card.module.scss'; // Crearemos este archivo de estilos en un momento
-
-// Define la interfaz para una sola aplicación dentro del componente
-interface Application {
-    status: string;
-    id: number;
-    vacant_title: string;
-    company_name: string;
-}
+import { Application } from '@/types/index';
 
 export default function RecentApplicationsCard() {
-    // 3 estados: uno para los datos, uno para el estado de carga y otro para errores
-    const [applications, setApplications] = useState<Application[]>([]);
+    const [applications, setApplications] = useState<Application[]>([]); // ✅ Ahora usa el tipo correcto
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+
     useEffect(() => {
-        // Función para cargar los datos
         const fetchApplications = async () => {
             try {
-                // Traer solo las 3 más recientes para el dashboard
                 const data = await getMyApplications({ page: 1, per_page: 3 });
+                // TypeScript ya no se quejará porque ambos usan el mismo tipo
                 setApplications(data.applications);
             } catch (err) {
                 setError("No se pudieron cargar las postulaciones.");
@@ -34,7 +26,7 @@ export default function RecentApplicationsCard() {
         };
 
         fetchApplications();
-    }, []); // El array vacío [] asegura que esto se ejecute solo una vez, cuando el componente se monta
+    }, []);
 
     // Renderizado condicional basado en el estado
     if (isLoading) {

@@ -1,14 +1,8 @@
 import axiosInstance from './axiosConfig'; // Importamos nuestra instancia configurada
+import { Application } from '@/types/index';
 
-// Define la interfaz de una postulación (lo que esperamos de la API)
-interface Application {
-    id: number;
-    vacant_title: string;
-    company_name: string;
-    application_status: string;
 
-    // ... cualquier otro campo que devuelva tu API
-}
+
 
 // Define la respuesta de la API de postulaciones
 interface ApplicationsResponse {
