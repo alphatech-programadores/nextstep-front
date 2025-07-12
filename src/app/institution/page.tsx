@@ -29,7 +29,7 @@ export default function InstitutionDashboardPage() {
                 try {
                     const data = await getMyInstitutionVacancies();
                     setVacancies(data);
-                } catch (err) {
+                } catch (error) {
                     setError('No se pudieron cargar tus vacantes. Inténtalo de nuevo más tarde.');
                 } finally {
                     setIsLoading(false);

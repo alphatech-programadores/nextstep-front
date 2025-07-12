@@ -13,7 +13,6 @@ import axiosInstance from '@/services/axiosConfig';
 import axios from 'axios';
 
 export default function ForgotPasswordPage() {
-    const router = useRouter(); // Lo añadimos por si queremos añadir una redirección
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false); // Estado para manejar el loading del botón
 

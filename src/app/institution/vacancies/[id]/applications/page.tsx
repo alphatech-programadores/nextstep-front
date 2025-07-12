@@ -25,7 +25,7 @@ export default function ViewApplicantsPage() {
         try {
             const data = await getVacancyApplicants(vacancyId);
             setApplicants(data);
-        } catch (err) {
+        } catch (error) {
             setError('No se pudieron cargar los postulantes.');
         } finally {
             setIsLoading(false);

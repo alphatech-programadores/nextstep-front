@@ -11,7 +11,6 @@ import Link from 'next/link';
 import RecentApplicationsCard from '@/components/RecentApplicationsCard';
 import ProfileProgressCard from '@/components/ProfileProgressCard';
 import KeySkillsCard from '@/components/KeySkillsCard';
-import KeySkillStats from '@/components/KeySkillStats';
 
 export default function DashboardPage() {
     const { user, loadingUser } = useAuth();

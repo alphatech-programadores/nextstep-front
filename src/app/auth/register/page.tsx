@@ -32,13 +32,6 @@ export default function RegisterPage() {
         setLoading(true);
 
         try {
-            const response = await axiosInstance.post("auth/register", {
-                name,
-                email,
-                password,
-                role,
-            });
-
             toast.success("Registro exitoso. ¡Bienvenido a NextStep! 🎉 Ahora puedes iniciar sesión.");
             router.push("/auth/login");
         } catch (error: unknown) {

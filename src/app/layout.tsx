@@ -1,7 +1,6 @@
 // src/app/layout.tsx
 
 import './globals.scss';
-import { ReactNode } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from '@/context/AuthContext';
 import Navbar from '@/components/Navbar'; // ¡Importa tu Navbar!
